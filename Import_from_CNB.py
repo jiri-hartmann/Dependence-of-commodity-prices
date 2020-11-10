@@ -1,14 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
 """ Download exchange rates inforation from CNB server (www.cnb.cz) and upload to local database named ades. 
     Program find day of last entry to db., download  and import next days up to today. 
 """
-__author__      = "Jiří Hartmann"
-__email__ = "jiri.hartmann@gmail.com"
 
-import sys
 import datetime as dt
 import pandas as pd
+import sys
 from make_mysql_connection import make_mysql_connection
 
 
@@ -44,4 +41,8 @@ cnb_er.set_index("Date", inplace = True)
 cnb_er = cnb_er.loc[first_day_for_import : dt.date.today()]     # select for import only new days
 
 cnb_er.to_sql("cnb_er", alchemy_conn, if_exists= "append") 
-print(cnb_er)
+if not cnb_er.empty:
+    pd.set_option('display.max_rows', 50)
+    pd.set_option('display.max_columns', 1000)
+    pd.set_option('display.width', 1000)
+    print(cnb_er[["EUR", "USD"]])
